@@ -1,0 +1,364 @@
+{
+  "questions": [
+    {
+      "role": "frontend_developer",
+      "level": "easy",
+      "topic": "HTML",
+      "text": "What is the difference between div and span elements in HTML?",
+      "followUpPatterns": ["When would you use each?", "Can you give an example?"],
+      "expectedKeywords": ["block", "inline", "display", "layout"],
+      "difficulty": 2
+    },
+    {
+      "role": "frontend_developer",
+      "level": "easy",
+      "topic": "CSS",
+      "text": "Explain the CSS box model.",
+      "followUpPatterns": ["What are the components?", "How does box-sizing affect it?"],
+      "expectedKeywords": ["content", "padding", "border", "margin", "width", "height"],
+      "difficulty": 3
+    },
+    {
+      "role": "frontend_developer",
+      "level": "medium",
+      "topic": "JavaScript",
+      "text": "What is the difference between let, const, and var in JavaScript?",
+      "followUpPatterns": ["When should you use each?", "What is hoisting?"],
+      "expectedKeywords": ["scope", "hoisting", "reassignment", "block", "temporal dead zone"],
+      "difficulty": 5
+    },
+    {
+      "role": "frontend_developer",
+      "level": "medium",
+      "topic": "React",
+      "text": "Explain the difference between state and props in React.",
+      "followUpPatterns": ["When would you use each?", "Can props be modified?"],
+      "expectedKeywords": ["props", "state", "immutable", "component", "render"],
+      "difficulty": 5
+    },
+    {
+      "role": "frontend_developer",
+      "level": "medium",
+      "topic": "React",
+      "text": "What are React hooks? Name a few commonly used hooks.",
+      "followUpPatterns": ["When were hooks introduced?", "Can you create custom hooks?"],
+      "expectedKeywords": ["useState", "useEffect", "useContext", "useMemo", "useCallback"],
+      "difficulty": 4
+    },
+    {
+      "role": "frontend_developer",
+      "level": "hard",
+      "topic": "React",
+      "text": "How would you optimize the performance of a large React application?",
+      "followUpPatterns": ["What about code splitting?", "How does memoization help?"],
+      "expectedKeywords": ["memo", "useMemo", "useCallback", "lazy", "Suspense", "virtualization"],
+      "difficulty": 8
+    },
+    {
+      "role": "frontend_developer",
+      "level": "hard",
+      "topic": "JavaScript",
+      "text": "Explain how closures work in JavaScript and provide a practical use case.",
+      "followUpPatterns": ["What is the closure scope?", "How does this affect memory?"],
+      "expectedKeywords": ["scope", "lexical", "environment", "function", "private"],
+      "difficulty": 8
+    },
+    {
+      "role": "backend_developer",
+      "level": "easy",
+      "topic": "Node.js",
+      "text": "What is Node.js and when would you use it?",
+      "followUpPatterns": ["What are the pros and cons?", "How does it handle concurrency?"],
+      "expectedKeywords": ["runtime", "non-blocking", "event loop", "JavaScript", "server"],
+      "difficulty": 2
+    },
+    {
+      "role": "backend_developer",
+      "level": "easy",
+      "topic": "Express",
+      "text": "What is Express.js and what are its main features?",
+      "followUpPatterns": ["How does middleware work?", "What are the alternatives?"],
+      "expectedKeywords": ["middleware", "routing", "HTTP", "request", "response"],
+      "difficulty": 3
+    },
+    {
+      "role": "backend_developer",
+      "level": "medium",
+      "topic": "Databases",
+      "text": "Explain the difference between SQL and NoSQL databases.",
+      "followUpPatterns": ["When would you choose one over the other?", "What about scalability?"],
+      "expectedKeywords": ["schema", "relational", "document", "flexible", "ACID", "eventual consistency"],
+      "difficulty": 5
+    },
+    {
+      "role": "backend_developer",
+      "level": "medium",
+      "topic": "Authentication",
+      "text": "What is JWT authentication and how does it work?",
+      "followUpPatterns": ["What are the advantages over sessions?", "How do you handle token refresh?"],
+      "expectedKeywords": ["token", "header", "payload", "signature", "stateless"],
+      "difficulty": 6
+    },
+    {
+      "role": "backend_developer",
+      "level": "hard",
+      "topic": "Architecture",
+      "text": "Design a scalable microservices architecture for an e-commerce platform.",
+      "followUpPatterns": ["How would you handle inter-service communication?", "What about data consistency?"],
+      "expectedKeywords": ["API Gateway", "message queue", "load balancer", "database per service", "circuit breaker"],
+      "difficulty": 9
+    },
+    {
+      "role": "react_native_developer",
+      "level": "easy",
+      "topic": "React Native Basics",
+      "text": "What is React Native and how does it differ from React for web?",
+      "followUpPatterns": ["What are the limitations?", "How do you handle platform-specific code?"],
+      "expectedKeywords": ["native", "components", "mobile", "iOS", "Android", "DOM"],
+      "difficulty": 3
+    },
+    {
+      "role": "react_native_developer",
+      "level": "medium",
+      "topic": "Navigation",
+      "text": "Explain React Navigation and its main components.",
+      "followUpPatterns": ["How do you handle deep linking?", "What about authentication flows?"],
+      "expectedKeywords": ["Navigator", "Stack", "Tab", "Drawer", "Screen", "params"],
+      "difficulty": 5
+    },
+    {
+      "role": "react_native_developer",
+      "level": "hard",
+      "topic": "Performance",
+      "text": "How would you optimize a React Native app that is experiencing performance issues?",
+      "followUpPatterns": ["What about list rendering?", "How do you handle images?"],
+      "expectedKeywords": ["FlatList", "VirtualizedList", "memo", "optimization", "FPS", "native modules"],
+      "difficulty": 8
+    },
+    {
+      "role": "node_js_developer",
+      "level": "easy",
+      "topic": "Node.js Basics",
+      "text": "What is the event loop in Node.js?",
+      "followUpPatterns": ["How does it handle async operations?", "What are the phases?"],
+      "expectedKeywords": ["event queue", "call stack", "libuv", "callbacks", "non-blocking"],
+      "difficulty": 3
+    },
+    {
+      "role": "node_js_developer",
+      "level": "medium",
+      "topic": "Async Programming",
+      "text": "Compare callbacks, promises, and async/await in Node.js.",
+      "followUpPatterns": ["What are the error handling patterns?", "When would you use each?"],
+      "expectedKeywords": ["callback hell", "then", "catch", "await", "async", "error-first"],
+      "difficulty": 5
+    },
+    {
+      "role": "node_js_developer",
+      "level": "hard",
+      "topic": "Streams",
+      "text": "Explain Node.js streams and when would you use them.",
+      "followUpPatterns": ["How do you handle backpressure?", "What about error handling in streams?"],
+      "expectedKeywords": ["readable", "writable", "duplex", "transform", "buffer", "pipe"],
+      "difficulty": 8
+    },
+    {
+      "role": "data_structures_algorithms",
+      "level": "easy",
+      "topic": "Arrays",
+      "text": "What is the time complexity of accessing an element in an array?",
+      "followUpPatterns": ["What about searching?", "Insertion and deletion?"],
+      "expectedKeywords": ["O(1)", "random access", "index", "contiguous", "memory"],
+      "difficulty": 2
+    },
+    {
+      "role": "data_structures_algorithms",
+      "level": "medium",
+      "topic": "Trees",
+      "text": "Explain the difference between a Binary Tree and a Binary Search Tree.",
+      "followUpPatterns": ["What are the operations and their complexities?", "How do you balance a BST?"],
+      "expectedKeywords": ["binary", "search", "left", "right", "O(log n)", "balanced", "AVL", "Red-Black"],
+      "difficulty": 6
+    },
+    {
+      "role": "data_structures_algorithms",
+      "level": "hard",
+      "topic": "Dynamic Programming",
+      "text": "Explain dynamic programming and when would you use it over other approaches.",
+      "followUpPatterns": ["What is memoization vs tabulation?", "Can you give an example?"],
+      "expectedKeywords": ["optimal substructure", "overlapping subproblems", "memoization", "tabulation", "DP"],
+      "difficulty": 8
+    },
+    {
+      "role": "system_design",
+      "level": "easy",
+      "topic": "Basics",
+      "text": "What is the difference between horizontal and vertical scaling?",
+      "followUpPatterns": ["What are the trade-offs?", "Which would you choose and when?"],
+      "expectedKeywords": ["scale out", "scale up", "load balancer", "sharding", "replication"],
+      "difficulty": 3
+    },
+    {
+      "role": "system_design",
+      "level": "medium",
+      "topic": "Caching",
+      "text": "How would you design a caching strategy for a web application?",
+      "followUpPatterns": ["What caching algorithms would you use?", "How do you handle cache invalidation?"],
+      "expectedKeywords": ["Redis", "Memcached", "LRU", "TTL", "cache-aside", "write-through"],
+      "difficulty": 6
+    },
+    {
+      "role": "system_design",
+      "level": "hard",
+      "topic": "Complex Design",
+      "text": "Design a real-time chat application like WhatsApp.",
+      "followUpPatterns": ["How do you ensure message delivery?", "What about end-to-end encryption?"],
+      "expectedKeywords": ["WebSocket", "message queue", "database", "CDN", "presence", "push notification"],
+      "difficulty": 9
+    },
+    {
+      "role": "hr_round",
+      "level": "easy",
+      "topic": "Introduction",
+      "text": "Tell me about yourself.",
+      "followUpPatterns": ["What are your greatest strengths?", "Why are you interested in this role?"],
+      "expectedKeywords": ["background", "experience", "goals", "skills"],
+      "difficulty": 2
+    },
+    {
+      "role": "hr_round",
+      "level": "medium",
+      "topic": "Behavioral",
+      "text": "Describe a time when you had to work with a difficult team member.",
+      "followUpPatterns": ["How did you handle the situation?", "What was the outcome?"],
+      "expectedKeywords": ["conflict", "resolution", "communication", "collaboration", "STAR"],
+      "difficulty": 5
+    },
+    {
+      "role": "ai_engineer",
+      "level": "medium",
+      "topic": "ML Basics",
+      "text": "What is the difference between supervised and unsupervised learning?",
+      "followUpPatterns": ["Can you give examples of each?", "What about semi-supervised learning?"],
+      "expectedKeywords": ["labeled", "unlabeled", "classification", "clustering", "regression"],
+      "difficulty": 5
+    },
+    {
+      "role": "ai_engineer",
+      "level": "hard",
+      "topic": "Deep Learning",
+      "text": "Explain how transformers work and why they are effective for NLP tasks.",
+      "followUpPatterns": ["What is self-attention?", "How does this compare to RNNs?"],
+      "expectedKeywords": ["attention", "self-attention", "BERT", "GPT", "positional encoding", "multi-head"],
+      "difficulty": 9
+    },
+    {
+      "role": "data_analyst",
+      "level": "easy",
+      "topic": "SQL",
+      "text": "What is the difference between WHERE and HAVING clauses?",
+      "followUpPatterns": ["When would you use each?", "What about performance?"],
+      "expectedKeywords": ["filter", "aggregate", "GROUP BY", "HAVING", "WHERE"],
+      "difficulty": 2
+    },
+    {
+      "role": "data_analyst",
+      "level": "medium",
+      "topic": "Statistics",
+      "text": "Explain the difference between correlation and causation.",
+      "followUpPatterns": ["How would you determine if there is causation?", "What are some common pitfalls?"],
+      "expectedKeywords": ["correlation", "causation", "correlation coefficient", "spurious", "experiment"],
+      "difficulty": 5
+    },
+    {
+      "role": "data_scientist",
+      "level": "medium",
+      "topic": "ML Models",
+      "text": "What is overfitting and how would you prevent it?",
+      "followUpPatterns": ["How do you validate your model?", "What about cross-validation?"],
+      "expectedKeywords": ["overfitting", "underfitting", "regularization", "cross-validation", "bias", "variance"],
+      "difficulty": 6
+    },
+    {
+      "role": "data_scientist",
+      "level": "hard",
+      "topic": "Feature Engineering",
+      "text": "How would you approach feature engineering for a machine learning project?",
+      "followUpPatterns": ["What are some common techniques?", "How do you handle categorical variables?"],
+      "expectedKeywords": ["encoding", "scaling", "feature selection", "extraction", "PCA", "one-hot"],
+      "difficulty": 8
+    },
+    {
+      "role": "product_manager",
+      "level": "easy",
+      "topic": "Basics",
+      "text": "What does a Product Manager do?",
+      "followUpPatterns": ["How do you prioritize features?", "How do you work with engineering?"],
+      "expectedKeywords": ["strategy", "roadmap", "stakeholders", "prioritization", "user research"],
+      "difficulty": 2
+    },
+    {
+      "role": "product_manager",
+      "level": "medium",
+      "topic": "Strategy",
+      "text": "How would you decide which features to build for a new product?",
+      "followUpPatterns": ["How do you gather requirements?", "What about technical constraints?"],
+      "expectedKeywords": ["prioritization", "user stories", "ROI", "impact", "effort", "customer feedback"],
+      "difficulty": 5
+    },
+    {
+      "role": "consultant",
+      "level": "medium",
+      "topic": "Case Study",
+      "text": "How would you approach a new consulting engagement?",
+      "followUpPatterns": ["How do you gather information?", "What about stakeholder management?"],
+      "expectedKeywords": ["discovery", "analysis", "recommendations", "stakeholders", "framework"],
+      "difficulty": 5
+    },
+    {
+      "role": "tax_analyst",
+      "level": "easy",
+      "topic": "Basics",
+      "text": "What is the difference between tax avoidance and tax evasion?",
+      "followUpPatterns": ["What are the legal implications?", "Give an example of avoidance."],
+      "expectedKeywords": ["legal", "illegal", "IRS", "compliance", "deductions", "credits"],
+      "difficulty": 2
+    },
+    {
+      "role": "forward_deploy_engineer",
+      "level": "medium",
+      "topic": "Deployment",
+      "text": "What is your experience with CI/CD pipelines?",
+      "followUpPatterns": ["How do you handle rollbacks?", "What about testing in CI?"],
+      "expectedKeywords": ["automation", "testing", "deployment", "Jenkins", "GitHub Actions", "Docker"],
+      "difficulty": 5
+    },
+    {
+      "role": "software_engineer",
+      "level": "easy",
+      "topic": "OOP",
+      "text": "What are the four pillars of object-oriented programming?",
+      "followUpPatterns": ["Can you give an example of each?", "How do you apply them in code?"],
+      "expectedKeywords": ["encapsulation", "inheritance", "polymorphism", "abstraction"],
+      "difficulty": 3
+    },
+    {
+      "role": "software_engineer",
+      "level": "medium",
+      "topic": "Design Patterns",
+      "text": "Explain the Singleton design pattern and when you would use it.",
+      "followUpPatterns": ["What are the drawbacks?", "How does it differ from a static class?"],
+      "expectedKeywords": ["instance", "global", "thread-safety", "lazy initialization", "Eager loading"],
+      "difficulty": 5
+    },
+    {
+      "role": "software_engineer",
+      "level": "hard",
+      "topic": "System Design",
+      "text": "Design a URL shortener service like Bit.ly.",
+      "followUpPatterns": ["How would you generate short URLs?", "What about collision handling?"],
+      "expectedKeywords": ["hash", "base62", "database", "cache", "redirect", "scalability"],
+      "difficulty": 8
+    }
+  ]
+}

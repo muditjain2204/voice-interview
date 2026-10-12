@@ -1,0 +1,154 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id              String           @id @default(cuid())
+  name            String
+  email           String           @unique
+  password        String
+  role            UserRole
+  companyTarget   Company?
+  defaultLevel    InterviewLevel   @default(medium)
+  credits         Int              @default(0)
+  subscriptionTier SubscriptionTier @default(free)
+  createdAt       DateTime         @default(now())
+  updatedAt       DateTime         @updatedAt
+  interviews      Interview[]
+  payments        Payment[]
+
+  @@index([email])
+  @@index([role])
+}
+
+model Interview {
+  id              String           @id @default(cuid())
+  userId          String
+  user            User             @relation(fields: [userId], references: [id])
+  role            UserRole
+  company         Company?
+  level           InterviewLevel
+  status          InterviewStatus  @default(scheduled)
+  scheduledAt     DateTime?
+  startedAt       DateTime?
+  completedAt     DateTime?
+  durationSeconds Int?
+  transcript      Json             @default("[]")
+  proctoringData  Json             @default("{}")
+  feedback        Json?
+  createdAt       DateTime         @default(now())
+  updatedAt       DateTime         @updatedAt
+
+  @@index([userId])
+  @@index([status])
+  @@index([role])
+}
+
+model Question {
+  id               String         @id @default(cuid())
+  role             UserRole
+  level            InterviewLevel
+  topic            String
+  text             String
+  followUpPatterns String?
+  expectedKeywords String?
+  difficulty       Int
+  createdAt        DateTime       @default(now())
+
+  @@index([role, level])
+  @@index([topic])
+}
+
+model CompanyInfo {
+  id            String   @id @default(cuid())
+  name          String   @unique
+  displayName   String
+  description   String?
+  industry      String?
+  logoUrl       String?
+  createdAt     DateTime @default(now())
+}
+
+model Payment {
+  id              String   @id @default(cuid())
+  userId          String
+  user            User     @relation(fields: [userId], references: [id])
+  stripePaymentId String   @unique
+  amount          Int
+  currency        String   @default("usd")
+  status          PaymentStatus @default(pending)
+  subscriptionTier SubscriptionTier
+  createdAt       DateTime @default(now())
+
+  @@index([userId])
+}
+
+enum UserRole {
+  frontend_developer
+  backend_developer
+  react_native_developer
+  node_js_developer
+  data_structures_algorithms
+  system_design
+  hr_round
+  ai_engineer
+  data_analyst
+  data_scientist
+  product_manager
+  consultant
+  tax_analyst
+  forward_deploy_engineer
+  software_engineer
+}
+
+enum InterviewLevel {
+  easy
+  medium
+  hard
+}
+
+enum InterviewStatus {
+  scheduled
+  in_progress
+  completed
+  cancelled
+}
+
+enum Company {
+  google
+  meta
+  amazon
+  microsoft
+  apple
+  netflix
+  uber
+  airbnb
+  stripe
+  openai
+  anthropic
+  databricks
+  snowflake
+  deloitte
+  pwc
+  mckinsey
+  goldman_sachs
+  jpmorgan
+}
+
+enum SubscriptionTier {
+  free
+  pro
+  enterprise
+}
+
+enum PaymentStatus {
+  pending
+  succeeded
+  failed
+  refunded
+}

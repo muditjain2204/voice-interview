@@ -1,0 +1,130 @@
+{
+  "companies": [
+    {
+      "name": "google",
+      "displayName": "Google",
+      "description": "Google LLC is an American multinational technology corporation focusing on online advertising, search engine technology, cloud computing, and software.",
+      "industry": "Technology",
+      "logoUrl": "https://www.google.com/images/branding/googlelogo/1x/googlelogo_color_272x92dp.png"
+    },
+    {
+      "name": "meta",
+      "displayName": "Meta",
+      "description": "Meta Platforms, Inc. is an American multinational technology conglomerate based in Menlo Park, California.",
+      "industry": "Technology",
+      "logoUrl": null
+    },
+    {
+      "name": "amazon",
+      "displayName": "Amazon",
+      "description": "Amazon.com, Inc. is an American multinational technology company focusing on e-commerce, cloud computing, and artificial intelligence.",
+      "industry": "E-commerce & Cloud",
+      "logoUrl": null
+    },
+    {
+      "name": "microsoft",
+      "displayName": "Microsoft",
+      "description": "Microsoft Corporation is an American multinational technology corporation that produces computer software, consumer electronics, and related services.",
+      "industry": "Technology",
+      "logoUrl": null
+    },
+    {
+      "name": "apple",
+      "displayName": "Apple",
+      "description": "Apple Inc. is an American multinational technology company that specializes in consumer electronics, software, and online services.",
+      "industry": "Technology",
+      "logoUrl": null
+    },
+    {
+      "name": "netflix",
+      "displayName": "Netflix",
+      "description": "Netflix, Inc. is an American subscription video on-demand over-the-top streaming service.",
+      "industry": "Entertainment",
+      "logoUrl": null
+    },
+    {
+      "name": "uber",
+      "displayName": "Uber",
+      "description": "Uber Technologies, Inc. is an American technology company that operates a mobile app and website connecting consumers with rideshare drivers.",
+      "industry": "Transportation & Technology",
+      "logoUrl": null
+    },
+    {
+      "name": "airbnb",
+      "displayName": "Airbnb",
+      "description": "Airbnb, Inc. is an American company that operates an online marketplace for short-term homestays and experiences.",
+      "industry": "Hospitality & Technology",
+      "logoUrl": null
+    },
+    {
+      "name": "stripe",
+      "displayName": "Stripe",
+      "description": "Stripe, Inc. is an American financial infrastructure platform for the internet that allows businesses to accept and manage online payments.",
+      "industry": "FinTech",
+      "logoUrl": null
+    },
+    {
+      "name": "openai",
+      "displayName": "OpenAI",
+      "description": "OpenAI is an American artificial intelligence research laboratory consisting of the non-profit OpenAI, Inc. and its for-profit subsidiary corporation OpenAI Global, LLC.",
+      "industry": "Artificial Intelligence",
+      "logoUrl": null
+    },
+    {
+      "name": "anthropic",
+      "displayName": "Anthropic",
+      "description": "Anthropic is an American artificial intelligence (AI) safety company founded in 2021, specializing in AI research and developing AI systems.",
+      "industry": "Artificial Intelligence",
+      "logoUrl": null
+    },
+    {
+      "name": "databricks",
+      "displayName": "Databricks",
+      "description": "Databricks is an American enterprise software company that combines data warehouses and data lakes into a lakehouse platform.",
+      "industry": "Data & AI",
+      "logoUrl": null
+    },
+    {
+      "name": "snowflake",
+      "displayName": "Snowflake",
+      "description": "Snowflake Inc. is a cloud computing–based data analytics company headquartered in Bozeman, Montana.",
+      "industry": "Data & Cloud",
+      "logoUrl": null
+    },
+    {
+      "name": "deloitte",
+      "displayName": "Deloitte",
+      "description": "Deloitte Touche Tohmatsu Limited, commonly known as Deloitte, is a multinational professional services network.",
+      "industry": "Consulting & Professional Services",
+      "logoUrl": null
+    },
+    {
+      "name": "pwc",
+      "displayName": "PwC",
+      "description": "PricewaterhouseCoopers is a multinational professional services network of firms operating as partnerships.",
+      "industry": "Consulting & Professional Services",
+      "logoUrl": null
+    },
+    {
+      "name": "mckinsey",
+      "displayName": "McKinsey & Company",
+      "description": "McKinsey & Company is an American worldwide management consulting firm, founded in 1926.",
+      "industry": "Management Consulting",
+      "logoUrl": null
+    },
+    {
+      "name": "goldman_sachs",
+      "displayName": "Goldman Sachs",
+      "description": "The Goldman Sachs Group, Inc. is an American multinational investment bank and financial services company.",
+      "industry": "Investment Banking & Finance",
+      "logoUrl": null
+    },
+    {
+      "name": "jpmorgan",
+      "displayName": "JPMorgan Chase",
+      "description": "JPMorgan Chase & Co. is an American multinational financial services firm headquartered in New York City.",
+      "industry": "Investment Banking & Finance",
+      "logoUrl": null
+    }
+  ]
+}
