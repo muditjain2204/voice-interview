@@ -5,14 +5,14 @@ import { prisma } from '../prisma/client';
 import { config } from '../config';
 import Razorpay from 'razorpay';
 import crypto from 'crypto';
-import Stripe from 'stripe';
 import { z } from 'zod';
 import { logger } from '../utils/logger';
 import { validateRequest } from '../middleware/validation';
+import { PaymentModel } from '../models/payment.model';
 
 const router = Router();
 
-// Lazy/safe initialization for Razorpay
+// Razorpay SDK initialization
 let razorpay: Razorpay | null = null;
 if (config.razorpay.keyId && config.razorpay.keySecret) {
   razorpay = new Razorpay({
@@ -21,15 +21,7 @@ if (config.razorpay.keyId && config.razorpay.keySecret) {
   });
 }
 
-// Optional Stripe instance (fallback only)
-let stripe: Stripe | null = null;
-if (config.stripe.secretKey) {
-  stripe = new Stripe(config.stripe.secretKey, {
-    apiVersion: '2024-04-10',
-  });
-}
-
-const checkoutSchema = z.object({
+const createOrderSchema = z.object({
   plan: z.enum(['pro', 'enterprise']),
 });
 
@@ -40,65 +32,59 @@ const verifyPaymentSchema = z.object({
   plan: z.enum(['pro', 'enterprise']),
 });
 
-// Plan details: amounts in smallest currency unit (paise for INR, cents for USD)
+// Subscription plan details (prices in paise: ₹1 = 100 paise)
 export const PLAN_DETAILS: Record<
   string,
-  { priceInr: number; priceUsd: number; name: string; credits: number; displayInr: string; displayUsd: string }
+  { priceInr: number; name: string; credits: number; displayPrice: string }
 > = {
   pro: {
     priceInr: 199900, // ₹1,999
-    priceUsd: 2900,   // $29
     name: 'Pro Plan',
     credits: 20,
-    displayInr: '₹1,999',
-    displayUsd: '$29',
+    displayPrice: '₹1,999',
   },
   enterprise: {
     priceInr: 499900, // ₹4,999
-    priceUsd: 9900,   // $99
     name: 'Enterprise Plan',
     credits: 100,
-    displayInr: '₹4,999',
-    displayUsd: '$99',
+    displayPrice: '₹4,999',
   },
 };
 
 /**
  * GET /api/v1/payments/plans
- * Get available subscription plans and active payment gateway info
+ * Get available subscription plans and gateway status
  */
 router.get(
   '/plans',
   asyncHandler(async (req: Request, res: Response) => {
     res.json({
-      gateway: razorpay ? 'razorpay' : stripe ? 'stripe' : 'none',
+      gateway: 'razorpay',
       razorpayKeyId: config.razorpay.keyId || null,
       plans: [
         {
           id: 'free',
           name: 'Free',
           priceInr: 0,
-          priceUsd: 0,
           displayPrice: '₹0',
           interviewsPerMonth: 2,
           features: [
             '2 free interviews per month',
-            'Basic feedback & score',
-            'Standard AI interview models',
-            'Limited roles',
+            'Basic AI feedback & score',
+            'Standard interview roles',
+            'Community support',
           ],
         },
         {
           id: 'pro',
           name: 'Pro',
           priceInr: 1999,
-          priceUsd: 29,
           displayPrice: '₹1,999',
           interviewsPerMonth: 20,
           features: [
             '20 interviews per month',
-            'Advanced AI feedback & analytics',
-            'All roles & company simulations',
+            'Detailed AI feedback & tips',
+            'All 15+ tech roles & company simulations',
             'Webcam AI proctoring analytics',
             'Custom difficulty levels',
             'Priority response time',
@@ -108,15 +94,14 @@ router.get(
           id: 'enterprise',
           name: 'Enterprise',
           priceInr: 4999,
-          priceUsd: 99,
           displayPrice: '₹4,999',
           interviewsPerMonth: 100,
           features: [
             '100 interviews per month',
-            'Premium AI feedback & breakdown',
-            'All roles & companies',
-            'Advanced proctoring & integrity report',
-            'Custom role interview generation',
+            'Premium Deep AI analysis & metrics',
+            'All roles & company simulations',
+            'Comprehensive integrity & proctoring report',
+            'Unlimited retakes & scheduling',
             'Priority 24/7 support',
           ],
         },
@@ -126,13 +111,13 @@ router.get(
 );
 
 /**
- * POST /api/v1/payments/create-order (Razorpay)
- * Creates a Razorpay order for the selected plan
+ * POST /api/v1/payments/create-order
+ * Creates a Razorpay order for the chosen subscription plan
  */
 router.post(
   ['/create-order', '/razorpay/create-order'],
   authenticateToken,
-  validateRequest(checkoutSchema),
+  validateRequest(createOrderSchema),
   asyncHandler(async (req: AuthRequest, res: Response) => {
     const { plan } = req.body;
     const planDetails = PLAN_DETAILS[plan];
@@ -142,14 +127,14 @@ router.post(
     }
 
     if (!razorpay) {
-      logger.error('Razorpay is not configured (missing RAZORPAY_KEY_ID or RAZORPAY_KEY_SECRET)');
+      logger.error('Razorpay gateway is not configured (missing RAZORPAY_KEY_ID or RAZORPAY_KEY_SECRET)');
       return res.status(503).json({
-        error: 'Razorpay payment gateway is not configured on the server. Please add RAZORPAY_KEY_ID and RAZORPAY_KEY_SECRET in backend/.env',
+        error: 'Razorpay payment gateway is not configured. Please add RAZORPAY_KEY_ID and RAZORPAY_KEY_SECRET in backend/.env',
       });
     }
 
     try {
-      const orderReceipt = `rcpt_${req.userId?.substring(0, 10)}_${Date.now()}`;
+      const orderReceipt = `rcpt_${req.userId?.substring(0, 8)}_${Date.now()}`;
       const order = await razorpay.orders.create({
         amount: planDetails.priceInr,
         currency: 'INR',
@@ -161,7 +146,7 @@ router.post(
         },
       });
 
-      logger.info(`Razorpay order created: ${order.id} for user ${req.userId}, plan: ${plan}`);
+      logger.info(`Created Razorpay order ${order.id} for user ${req.userId} (Plan: ${plan})`);
 
       res.json({
         orderId: order.id,
@@ -174,14 +159,16 @@ router.post(
       });
     } catch (err: any) {
       logger.error('Razorpay order creation error:', err);
-      res.status(500).json({ error: err.error?.description || err.message || 'Failed to create payment order' });
+      res.status(500).json({
+        error: err.error?.description || err.message || 'Failed to initialize payment order',
+      });
     }
   })
 );
 
 /**
- * POST /api/v1/payments/verify-payment (Razorpay)
- * Verifies Razorpay signature and activates credits/plan for the user
+ * POST /api/v1/payments/verify-payment
+ * Cryptographically verifies Razorpay signature via HMAC SHA-256 and activates user subscription
  */
 router.post(
   ['/verify-payment', '/razorpay/verify-payment'],
@@ -192,21 +179,19 @@ router.post(
     const userId = req.userId;
 
     if (!config.razorpay.keySecret) {
-      return res.status(503).json({ error: 'Razorpay key secret is not configured' });
+      return res.status(503).json({ error: 'Razorpay secret key is not configured' });
     }
 
-    // Verify cryptographic signature
+    // Verify HMAC SHA-256 signature
     const body = `${razorpay_order_id}|${razorpay_payment_id}`;
     const expectedSignature = crypto
       .createHmac('sha256', config.razorpay.keySecret)
       .update(body)
       .digest('hex');
 
-    const isAuthentic = expectedSignature === razorpay_signature;
-
-    if (!isAuthentic) {
+    if (expectedSignature !== razorpay_signature) {
       logger.warn(`Invalid Razorpay signature for order ${razorpay_order_id} by user ${userId}`);
-      return res.status(400).json({ error: 'Payment verification failed: invalid signature' });
+      return res.status(400).json({ error: 'Payment verification failed: signature mismatch' });
     }
 
     const planDetails = PLAN_DETAILS[plan];
@@ -214,21 +199,18 @@ router.post(
       return res.status(400).json({ error: 'Invalid plan' });
     }
 
-    // Check if payment was already processed
-    const existing = await prisma.payment.findUnique({
-      where: { razorpayPaymentId: razorpay_payment_id },
-    });
-
+    // Check if payment was already recorded
+    const existing = await PaymentModel.findByRazorpayPaymentId(razorpay_payment_id);
     if (existing) {
       return res.json({
         success: true,
-        message: 'Payment already processed',
+        message: 'Payment already verified',
         creditsAdded: planDetails.credits,
         tier: plan,
       });
     }
 
-    // Upgrade user credits and tier
+    // Grant user credits & upgrade tier
     await prisma.user.update({
       where: { id: userId },
       data: {
@@ -238,20 +220,19 @@ router.post(
     });
 
     // Record payment in database
-    await prisma.payment.create({
-      data: {
-        userId: userId!,
-        razorpayOrderId: razorpay_order_id,
-        razorpayPaymentId: razorpay_payment_id,
-        gateway: 'razorpay',
-        amount: planDetails.priceInr,
-        currency: 'inr',
-        status: 'succeeded',
-        subscriptionTier: plan as any,
-      },
+    await PaymentModel.create({
+      userId: userId!,
+      razorpayOrderId: razorpay_order_id,
+      razorpayPaymentId: razorpay_payment_id,
+      amount: planDetails.priceInr,
+      currency: 'inr',
+      subscriptionTier: plan as any,
+      status: 'succeeded',
     });
 
-    logger.info(`Payment verified: ${razorpay_payment_id} for user ${userId}. Added ${planDetails.credits} credits. Tier: ${plan}`);
+    logger.info(
+      `Payment verified: ${razorpay_payment_id} for user ${userId}. Granted ${planDetails.credits} credits. Tier: ${plan}`
+    );
 
     res.json({
       success: true,
@@ -263,11 +244,11 @@ router.post(
 );
 
 /**
- * POST /api/v1/payments/razorpay/webhook
- * Razorpay Webhook handler
+ * POST /api/v1/payments/webhook
+ * Razorpay Webhook handler for async capture events
  */
 router.post(
-  '/razorpay/webhook',
+  ['/webhook', '/razorpay/webhook'],
   asyncHandler(async (req: Request, res: Response) => {
     const signature = req.headers['x-razorpay-signature'] as string;
 
@@ -287,8 +268,8 @@ router.post(
     const event = payload?.event;
 
     if (event === 'payment.captured') {
-      const payment = payload.payload?.payment?.entity;
-      const notes = payment?.notes || {};
+      const paymentEntity = payload.payload?.payment?.entity;
+      const notes = paymentEntity?.notes || {};
       const userId = notes.userId;
       const plan = notes.plan;
       const credits = parseInt(notes.credits || '20', 10);
@@ -301,7 +282,7 @@ router.post(
             credits: { increment: credits },
           },
         });
-        logger.info(`Razorpay webhook: activated ${plan} (${credits} credits) for user ${userId}`);
+        logger.info(`Razorpay webhook: activated plan ${plan} with ${credits} credits for user ${userId}`);
       }
     }
 
@@ -310,115 +291,19 @@ router.post(
 );
 
 /**
- * POST /api/v1/payments/create-checkout (Stripe Fallback)
- * Retained so Stripe works if configured, but does NOT disturb Razorpay
+ * GET /api/v1/payments/history
+ * Fetch authenticated user payment history
  */
-router.post(
-  '/create-checkout',
+router.get(
+  '/history',
   authenticateToken,
-  validateRequest(checkoutSchema),
   asyncHandler(async (req: AuthRequest, res: Response) => {
-    const { plan } = req.body;
-
-    if (!stripe) {
-      return res.status(503).json({ error: 'Stripe is not configured. Please use Razorpay checkout.' });
-    }
-
-    const planDetails = PLAN_DETAILS[plan];
-    if (!planDetails) {
-      return res.status(400).json({ error: 'Invalid plan' });
-    }
-
-    try {
-      const session = await stripe.checkout.sessions.create({
-        mode: 'subscription',
-        payment_method_types: ['card'],
-        line_items: [
-          {
-            price_data: {
-              currency: 'usd',
-              product_data: {
-                name: planDetails.name,
-                description: `Monthly subscription with ${planDetails.credits} interviews`,
-              },
-              unit_amount: planDetails.priceUsd,
-              recurring: { interval: 'month' },
-            },
-            quantity: 1,
-          },
-        ],
-        success_url: `${config.frontendUrl}/dashboard?payment=success`,
-        cancel_url: `${config.frontendUrl}/pricing?payment=cancelled`,
-        customer_email: req.user?.email,
-        metadata: {
-          userId: req.userId!,
-          plan,
-          credits: String(planDetails.credits),
-        },
-      });
-
-      res.json({ sessionId: session.id, url: session.url });
-    } catch (err: any) {
-      logger.error('Stripe checkout error:', err);
-      res.status(500).json({ error: 'Failed to create checkout session' });
-    }
-  })
-);
-
-/**
- * POST /api/v1/payments/webhook (Stripe Webhook Fallback)
- */
-router.post(
-  '/webhook',
-  asyncHandler(async (req: Request, res: Response) => {
-    if (!stripe || !config.stripe.webhookSecret) {
-      return res.status(200).json({ received: true });
-    }
-
-    const sig = req.headers['stripe-signature'];
-    if (!sig) return res.status(400).json({ error: 'Missing signature' });
-
-    try {
-      const event = stripe.webhooks.constructEvent(
-        req.body,
-        sig,
-        config.stripe.webhookSecret
-      );
-
-      if (event.type === 'checkout.session.completed') {
-        const session = event.data.object as Stripe.Checkout.Session;
-        const userId = session.metadata?.userId;
-        const plan = session.metadata?.plan;
-        const credits = parseInt(session.metadata?.credits || '20', 10);
-
-        if (userId && plan) {
-          await prisma.user.update({
-            where: { id: userId },
-            data: {
-              subscriptionTier: plan as any,
-              credits: { increment: credits },
-            },
-          });
-
-          await prisma.payment.create({
-            data: {
-              userId,
-              stripePaymentId: session.id,
-              gateway: 'stripe',
-              amount: session.amount_total || 0,
-              currency: session.currency || 'usd',
-              status: 'succeeded',
-              subscriptionTier: plan as any,
-            },
-          });
-        }
-      }
-
-      res.json({ received: true });
-    } catch (err: any) {
-      logger.error('Stripe webhook error:', err.message);
-      res.status(400).json({ error: `Webhook error: ${err.message}` });
-    }
+    const payments = await PaymentModel.listUserPayments(req.userId!);
+    res.json({
+      success: true,
+      count: payments.length,
+      payments,
+    });
   })
 );
 

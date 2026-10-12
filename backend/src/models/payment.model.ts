@@ -1,6 +1,6 @@
 /**
  * Payment & Subscription Model for Voice AI Interview Platform
- * Manages interview credit purchases, Razorpay/Stripe transactions, and tier subscriptions.
+ * Manages interview credit purchases, Razorpay transactions, and tier subscriptions.
  */
 
 import { prisma } from '../prisma/client';
@@ -11,10 +11,8 @@ export type PaymentStatus = 'pending' | 'succeeded' | 'failed' | 'refunded';
 
 export interface CreatePaymentData {
   userId: string;
-  stripePaymentId?: string;
-  razorpayOrderId?: string;
-  razorpayPaymentId?: string;
-  gateway?: string;
+  razorpayOrderId: string;
+  razorpayPaymentId: string;
   amount: number;
   currency?: string;
   subscriptionTier: SubscriptionTier;
@@ -23,25 +21,25 @@ export interface CreatePaymentData {
 
 export class PaymentModel {
   /**
-   * Record a new payment (Razorpay or Stripe)
+   * Record a new Razorpay payment
    */
   static async create(data: CreatePaymentData) {
     try {
       const payment = await prisma.payment.create({
         data: {
           userId: data.userId,
-          stripePaymentId: data.stripePaymentId,
           razorpayOrderId: data.razorpayOrderId,
           razorpayPaymentId: data.razorpayPaymentId,
-          gateway: data.gateway || 'razorpay',
           amount: data.amount,
           currency: data.currency || 'inr',
           subscriptionTier: data.subscriptionTier as any,
-          status: (data.status || 'pending') as any,
+          status: (data.status || 'succeeded') as any,
         },
       });
 
-      logger.info(`Recorded payment ${payment.id} for user ${data.userId}: ${data.amount / 100} ${data.currency || 'inr'}`);
+      logger.info(
+        `Recorded Razorpay payment ${payment.id} for user ${data.userId}: ₹${data.amount / 100}`
+      );
       return payment;
     } catch (error) {
       logger.error('PaymentModel.create error:', error);
@@ -50,7 +48,16 @@ export class PaymentModel {
   }
 
   /**
-   * Update payment status upon gateway confirmation
+   * Find payment by Razorpay payment ID
+   */
+  static async findByRazorpayPaymentId(razorpayPaymentId: string) {
+    return prisma.payment.findUnique({
+      where: { razorpayPaymentId },
+    });
+  }
+
+  /**
+   * Update payment status
    */
   static async updateStatus(paymentId: string, status: PaymentStatus) {
     try {

@@ -82,8 +82,8 @@ if (config.nodeEnv === 'production') {
   }
 
   // Warn about optional but important config
-  if (!config.razorpay.keyId && !config.stripe.secretKey) {
-    console.warn('⚠️ No payment keys configured (RAZORPAY_KEY_ID or STRIPE_SECRET_KEY) — payments disabled');
+  if (!config.razorpay.keyId) {
+    console.warn('⚠️ RAZORPAY_KEY_ID not set — payment checkout will be disabled');
   }
   if (!config.openai.apiKey && !config.anthropic.apiKey) {
     console.warn('⚠️ No AI API keys set — interview engine will use fallback responses');
