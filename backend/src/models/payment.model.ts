@@ -1,6 +1,6 @@
 /**
  * Payment & Subscription Model for Voice AI Interview Platform
- * Manages interview credit purchases, Stripe transactions, and tier subscriptions.
+ * Manages interview credit purchases, Razorpay/Stripe transactions, and tier subscriptions.
  */
 
 import { prisma } from '../prisma/client';
@@ -11,7 +11,10 @@ export type PaymentStatus = 'pending' | 'succeeded' | 'failed' | 'refunded';
 
 export interface CreatePaymentData {
   userId: string;
-  stripePaymentId: string;
+  stripePaymentId?: string;
+  razorpayOrderId?: string;
+  razorpayPaymentId?: string;
+  gateway?: string;
   amount: number;
   currency?: string;
   subscriptionTier: SubscriptionTier;
@@ -20,7 +23,7 @@ export interface CreatePaymentData {
 
 export class PaymentModel {
   /**
-   * Record a new Stripe payment
+   * Record a new payment (Razorpay or Stripe)
    */
   static async create(data: CreatePaymentData) {
     try {
@@ -28,14 +31,17 @@ export class PaymentModel {
         data: {
           userId: data.userId,
           stripePaymentId: data.stripePaymentId,
+          razorpayOrderId: data.razorpayOrderId,
+          razorpayPaymentId: data.razorpayPaymentId,
+          gateway: data.gateway || 'razorpay',
           amount: data.amount,
-          currency: data.currency || 'usd',
+          currency: data.currency || 'inr',
           subscriptionTier: data.subscriptionTier as any,
           status: (data.status || 'pending') as any,
         },
       });
 
-      logger.info(`Recorded payment ${payment.id} for user ${data.userId}: $${data.amount / 100}`);
+      logger.info(`Recorded payment ${payment.id} for user ${data.userId}: ${data.amount / 100} ${data.currency || 'inr'}`);
       return payment;
     } catch (error) {
       logger.error('PaymentModel.create error:', error);
@@ -44,16 +50,16 @@ export class PaymentModel {
   }
 
   /**
-   * Update payment status upon Stripe webhook confirmation
+   * Update payment status upon gateway confirmation
    */
-  static async updateStatus(stripePaymentId: string, status: PaymentStatus) {
+  static async updateStatus(paymentId: string, status: PaymentStatus) {
     try {
       return await prisma.payment.update({
-        where: { stripePaymentId },
+        where: { id: paymentId },
         data: { status: status as any },
       });
     } catch (error) {
-      logger.error(`PaymentModel.updateStatus error for ${stripePaymentId}:`, error);
+      logger.error(`PaymentModel.updateStatus error for ${paymentId}:`, error);
       throw error;
     }
   }

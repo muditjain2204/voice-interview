@@ -31,6 +31,12 @@ export const config = {
     url: process.env.LIVEKIT_URL || 'wss://your-livekit-server.livekit.cloud',
   },
 
+  razorpay: {
+    keyId: process.env.RAZORPAY_KEY_ID || '',
+    keySecret: process.env.RAZORPAY_KEY_SECRET || '',
+    webhookSecret: process.env.RAZORPAY_WEBHOOK_SECRET || '',
+  },
+
   stripe: {
     secretKey: process.env.STRIPE_SECRET_KEY || '',
     webhookSecret: process.env.STRIPE_WEBHOOK_SECRET || '',
@@ -76,8 +82,8 @@ if (config.nodeEnv === 'production') {
   }
 
   // Warn about optional but important config
-  if (!config.stripe.secretKey) {
-    console.warn('⚠️ STRIPE_SECRET_KEY not set — payments will be disabled');
+  if (!config.razorpay.keyId && !config.stripe.secretKey) {
+    console.warn('⚠️ No payment keys configured (RAZORPAY_KEY_ID or STRIPE_SECRET_KEY) — payments disabled');
   }
   if (!config.openai.apiKey && !config.anthropic.apiKey) {
     console.warn('⚠️ No AI API keys set — interview engine will use fallback responses');

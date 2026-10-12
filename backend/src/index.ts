@@ -37,10 +37,9 @@ const limiter = rateLimit({
 });
 app.use(limiter);
 
-// !! IMPORTANT: Stripe webhook MUST receive raw body BEFORE express.json() !!
-// Mount webhook route with raw body parser
+// !! IMPORTANT: Webhooks MUST receive raw body BEFORE express.json() !!
 app.use(
-  '/api/v1/payments/webhook',
+  ['/api/v1/payments/webhook', '/api/v1/payments/razorpay/webhook'],
   express.raw({ type: 'application/json' })
 );
 
