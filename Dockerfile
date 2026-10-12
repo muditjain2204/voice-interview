@@ -22,6 +22,9 @@ FROM node:20-alpine AS backend-build
 
 WORKDIR /app/backend
 
+# Install OpenSSL and libc6-compat for Prisma query engine
+RUN apk add --no-cache openssl libc6-compat
+
 # Install dependencies
 COPY backend/package.json backend/package-lock.json ./
 RUN npm ci
@@ -42,6 +45,9 @@ RUN npx tsc
 FROM node:20-alpine AS production
 
 WORKDIR /app
+
+# Install OpenSSL and libc6-compat for Prisma query engine runtime
+RUN apk add --no-cache openssl libc6-compat
 
 # Install only production dependencies
 COPY backend/package.json backend/package-lock.json ./
