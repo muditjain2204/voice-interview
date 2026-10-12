@@ -78,10 +78,8 @@ model Payment {
   id              String   @id @default(cuid())
   userId          String
   user            User     @relation(fields: [userId], references: [id])
-  stripePaymentId   String?  @unique
-  razorpayOrderId   String?  @unique
-  razorpayPaymentId String?  @unique
-  gateway           String   @default("razorpay")
+  razorpayOrderId   String   @unique
+  razorpayPaymentId String   @unique
   amount            Int
   currency          String   @default("inr")
   status          PaymentStatus @default(pending)
