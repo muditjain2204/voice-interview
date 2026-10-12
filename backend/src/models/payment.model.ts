@@ -34,7 +34,7 @@ export class PaymentModel {
           currency: data.currency || 'inr',
           subscriptionTier: data.subscriptionTier as any,
           status: (data.status || 'succeeded') as any,
-        },
+        } as any,
       });
 
       logger.info(
@@ -52,7 +52,7 @@ export class PaymentModel {
    */
   static async findByRazorpayPaymentId(razorpayPaymentId: string) {
     return prisma.payment.findUnique({
-      where: { razorpayPaymentId },
+      where: { razorpayPaymentId } as any,
     });
   }
 
@@ -63,7 +63,7 @@ export class PaymentModel {
     try {
       return await prisma.payment.update({
         where: { id: paymentId },
-        data: { status: status as any },
+        data: { status: status as any } as any,
       });
     } catch (error) {
       logger.error(`PaymentModel.updateStatus error for ${paymentId}:`, error);
