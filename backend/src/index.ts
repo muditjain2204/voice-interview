@@ -47,13 +47,24 @@ app.use(
 app.use(express.json({ limit: '10mb' }));
 app.use(express.urlencoded({ extended: true, limit: '10mb' }));
 
-// Health check endpoint
-app.get('/health', (req: Request, res: Response) => {
-  res.json({
-    status: 'ok',
-    timestamp: new Date().toISOString(),
-    service: 'voice-interview-api',
-  });
+// Health check endpoint (pings Neon PostgreSQL to prevent auto-suspend)
+app.get('/health', async (req: Request, res: Response) => {
+  try {
+    await prisma.$queryRaw`SELECT 1`;
+    res.json({
+      status: 'ok',
+      database: 'connected',
+      timestamp: new Date().toISOString(),
+      service: 'voice-interview-api',
+    });
+  } catch (error) {
+    res.status(200).json({
+      status: 'warming_up',
+      database: 'connecting',
+      timestamp: new Date().toISOString(),
+      service: 'voice-interview-api',
+    });
+  }
 });
 
 // API v1 routes
@@ -104,9 +115,21 @@ const httpServer = createServer(app);
 
 export { app, httpServer };
 
+// Keep Neon PostgreSQL awake (pings every 8 minutes to prevent Neon's 15-minute auto-suspend)
+const KEEP_ALIVE_INTERVAL_MS = 8 * 60 * 1000;
+const keepAliveTimer = setInterval(async () => {
+  try {
+    await prisma.$queryRaw`SELECT 1`;
+    logger.info('Neon PostgreSQL keep-alive heartbeat sent successfully');
+  } catch (error: any) {
+    logger.warn('Neon PostgreSQL keep-alive ping failed:', error.message);
+  }
+}, KEEP_ALIVE_INTERVAL_MS);
+
 // Graceful shutdown
 process.on('SIGTERM', async () => {
   logger.info('SIGTERM received. Shutting down gracefully...');
+  clearInterval(keepAliveTimer);
   await prisma.$disconnect();
   httpServer.close(() => {
     logger.info('HTTP server closed');
@@ -115,6 +138,7 @@ process.on('SIGTERM', async () => {
 
 process.on('SIGINT', async () => {
   logger.info('SIGINT received. Shutting down gracefully...');
+  clearInterval(keepAliveTimer);
   await prisma.$disconnect();
   httpServer.close(() => {
     logger.info('HTTP server closed');
